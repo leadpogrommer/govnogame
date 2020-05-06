@@ -20,7 +20,7 @@ public:
 private:
     static float getDistance(Segment s, Vector2f pos, float angle);
     void renderDebug();
-    SDL_Texture *drawText(std::string msg, SDL_Color color);
+    SDL_Texture *drawText(std::string msg, SDL_Color &color, int tox, int toy);
 
     SDL_Renderer* r;
     SDL_Window* window;

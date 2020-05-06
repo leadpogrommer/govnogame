@@ -26,6 +26,9 @@ void Drawer::render(Vector2f pos, float angle) {
         int base = h/2;
         SDL_RenderDrawLine(this->r, col, base - lh, col, base+lh);
     }
+
+    renderDebug();
+
     SDL_RenderPresent(this->r);
 }
 
@@ -53,12 +56,24 @@ float Drawer::getDistance(Segment s, Vector2f pos, float angle) {
 Drawer::Drawer(SDL_Window *w) : window(w) {
     r = SDL_GetRenderer(w);
     SDL_GetWindowSize(w, &(this->w), &h);
-    font = TTF_OpenFont("Hack-Regular.ttf", 32);
+
+    font = TTF_OpenFont("/home/ilya/.fonts/c/comic.ttf", 24);
+//    std::cout << TTF_GetError() << std::endl;
+//    std::cout << std::endl;
 }
 
 
 
 void Drawer::renderDebug() {
+    SDL_SetRenderDrawColor(r, 50, 50, 50, 0);
+    SDL_Rect bg = {0, 0, 100, 100};
+    SDL_RenderFillRect(r, &bg);
+
+    SDL_Color white = {255, 255, 255};
+
+//    drawText(std::string("shit"), white, 0, 0);
+
+
 
 }
 
@@ -66,7 +81,19 @@ Drawer::~Drawer() {
     TTF_CloseFont(font);
 }
 
-SDL_Texture *Drawer::drawText(std::string msg, SDL_Color color) {
+SDL_Texture *Drawer::drawText(std::string msg, SDL_Color &color, int tox, int toy) {
+    auto surf = TTF_RenderText_Blended(font, msg.c_str(), color);
+    auto texture = SDL_CreateTextureFromSurface(r, surf);
+    int tw, th;
 
+    SDL_QueryTexture(texture, nullptr, nullptr, &tw, &th);
+
+    SDL_Rect srcRect = {0, 0, tw, th};
+    SDL_Rect dstRect = {tox, toy, tw, th};
+
+    SDL_RenderCopy(r, texture, &srcRect, &dstRect);
+    SDL_FreeSurface(surf);
+    SDL_DestroyTexture(texture);
+    return texture;
 }
 

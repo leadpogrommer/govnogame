@@ -64,8 +64,10 @@ void Game::init() {
 void Game::tick() {
     eventer->process();
 
-    position.y += velocity.x*cos(angle) + velocity.y*sin(angle);
-    position.x += velocity.y*cos(angle) + velocity.x*sin(angle);
+    position.x += velocity.y*cos(angle) + velocity.x*cos(angle + M_PI/2);
+    position.y += velocity.y*sin(angle) + velocity.x*sin(angle + M_PI/2);
+
+
 
 
     angle += angularVelocity;
