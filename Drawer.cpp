@@ -1,6 +1,8 @@
 #include "Drawer.h"
 #include <cmath>
 #include <iostream>
+#include <SDL2/SDL_ttf.h>
+
 #define FOV M_PI/2
 
 void Drawer::render(Vector2f pos, float angle) {
@@ -51,5 +53,20 @@ float Drawer::getDistance(Segment s, Vector2f pos, float angle) {
 Drawer::Drawer(SDL_Window *w) : window(w) {
     r = SDL_GetRenderer(w);
     SDL_GetWindowSize(w, &(this->w), &h);
+    font = TTF_OpenFont("Hack-Regular.ttf", 32);
+}
+
+
+
+void Drawer::renderDebug() {
+
+}
+
+Drawer::~Drawer() {
+    TTF_CloseFont(font);
+}
+
+SDL_Texture *Drawer::drawText(std::string msg, SDL_Color color) {
+
 }
 

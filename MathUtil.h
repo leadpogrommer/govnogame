@@ -19,8 +19,14 @@ public:
         return Vector2f(this->x - v.x, this->y - v.y);
     }
 
+    Vector2f& operator+=(Vector2f & v){
+        this->x += v.x;
+        this->y += v.y;
+        return *this;
+    }
+
     float getAngle(){
-        atan2(y, x);
+        return atan2(y, x);
     }
 };
 

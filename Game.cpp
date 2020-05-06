@@ -1,9 +1,9 @@
 #include "Game.h"
 #include <iostream>
+#include <cmath>
 
 
-
-Game::Game(int w, int h): velocity(0, 0), width(w), height(h), position(0, 0), angle(M_PI/2) {}
+Game::Game(int w, int h): velocity(0, 0), width(w), height(h), position(0, 0), angle(M_PI/2), angularVelocity(0) {}
 
 void Game::error(int status) {
     std::cout << "ERROR!" << std::endl;
@@ -22,6 +22,7 @@ void Game::stop() {
 }
 
 void Game::run() {
+    isRunning = true;
     try {
         init();
     }catch (std::exception &e){
@@ -30,6 +31,7 @@ void Game::run() {
 
     while (isRunning){
         tick();
+        SDL_Delay(16);
     }
 
     SDL_DestroyRenderer(renderer);
@@ -42,6 +44,12 @@ void Game::init() {
         error();
     }
 
+    if (TTF_Init() != 0){
+        error();
+    }
+
+
+
     window = SDL_CreateWindow("Dicks", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
     ASSERT_NO_NULL(window);
 
@@ -49,20 +57,25 @@ void Game::init() {
     ASSERT_NO_NULL(renderer);
 
     drawer = new Drawer(window);
+    eventer = new EventProcessor(this);
 
 }
 
 void Game::tick() {
-    SDL_Event event;
-    if(SDL_PollEvent(&event)){
-        switch (event.type){
-            case SDL_QUIT: stop();
-                break;
-        }
-    }
+    eventer->process();
+
+    position.y += velocity.x*cos(angle) + velocity.y*sin(angle);
+    position.x += velocity.y*cos(angle) + velocity.x*sin(angle);
+
+
+    angle += angularVelocity;
 
     drawer->render(position, angle);
+}
 
+Game::~Game() {
+    free(drawer);
+    free(eventer);
 }
 
 
