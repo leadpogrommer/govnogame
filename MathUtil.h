@@ -1,6 +1,9 @@
 #pragma once
 
 #include <cmath>
+#include <SFML/System.hpp>
+
+#define PREPARE_ANGLE(a) if(a > M_PI) a-= 2*M_PI; else if(a < - M_PI) a += 2*M_PI;
 
 class Vector2f{
 public:
@@ -25,10 +28,42 @@ public:
         return *this;
     }
 
+    float dot(Vector2f &v1){
+        return this->x*v1.x + this->y*v1.y;
+    }
+
     float getAngle(){
         return atan2(y, x);
     }
+
+    float getLength(){
+        return sqrt(x*x + y*y);
+    }
+
+    void normalize(){
+        float l = getLength();
+        x /= l;
+        y /= l;
+    }
+
+    void scale(float s){
+        x *= s;
+        y *= s;
+    }
+
+    void setAngle(float a){
+        float l = getLength();
+        x = cos(a)*l;
+        y = sin(a)*l;
+
+    }
+
+
+    operator sf::Vector2f(){
+        return sf::Vector2f(this->x, this->y);
+    }
 };
+
 
 class Segment{
 public:

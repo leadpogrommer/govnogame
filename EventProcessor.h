@@ -12,7 +12,7 @@ public:
 
 private:
     Game* game;
-    void processKey(SDL_Keycode, bool);
+    void processKey(sf::Keyboard::Key k, bool);
     Vector2f velocity;
     float aw = 0;
 

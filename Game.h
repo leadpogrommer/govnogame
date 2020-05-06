@@ -1,7 +1,8 @@
 #pragma once
 
 class EventProcessor;
-#include <SDL2/SDL.h>
+
+#include <SFML/Graphics.hpp>
 #include <vector>
 #include "MathUtil.h"
 #include "Drawer.h"
@@ -32,8 +33,8 @@ private:
     bool isRunning;
     int width;
     int height;
-    SDL_Window *window;
-    SDL_Renderer *renderer;
+
+    sf::RenderWindow *window;
 
     Drawer *drawer;
     EventProcessor *eventer;

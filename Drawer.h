@@ -1,33 +1,34 @@
 #pragma once
 
-#include <SDL2/SDL.h>
+
 #include <cmath>
-#include <SDL2/SDL_ttf.h>
+
 #include <string>
 #include "MathUtil.h"
+#include "Wall.h"
 
+#include <SFML/Graphics.hpp>
 
 class Drawer {
 public:
-    explicit Drawer(SDL_Window* w);
+    explicit Drawer(sf::RenderWindow* w);
     ~Drawer();
     void render(Vector2f, float);
+    void renderDebug(Vector2f, float);
 
-    const int mapSize = 2;
-    Segment map[2] = {Segment(-3, -3, 0, 6), Segment(0, 8, 3, 2)};
+    const static int mapSize = 2;
+    Wall map[mapSize] = {Wall(Segment(-2, 5, 2, 2), sf::Color::Red), Wall(Segment(-2, 3, 4, 3), sf::Color::Green)};
 
 
 private:
-    static float getDistance(Segment s, Vector2f pos, float angle);
-    void renderDebug();
-    SDL_Texture *drawText(std::string msg, SDL_Color &color, int tox, int toy);
+//    static float getDistance(Segment s, Vector2f pos, float angle);
 
-    SDL_Renderer* r;
-    SDL_Window* window;
+//    SDL_Texture *drawText(std::string msg, SDL_Color &color, int tox, int toy);
+
+    sf::RenderWindow* window;
     int w;
     int h;
-
-    TTF_Font *font;
+    sf::VertexArray generateRect(int x, int y, int w, int h, sf::Color color);
     //TODO: free zbuffer
     float *zbuffer;
 

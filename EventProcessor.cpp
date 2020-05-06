@@ -8,37 +8,36 @@
 EventProcessor::EventProcessor(Game *g): game(g), velocity(0, 0) {}
 
 void EventProcessor::process() {
-    SDL_Event event;
-    while (SDL_PollEvent(&event)){
-        if ( event.key.repeat)continue;
+    sf::Event event;
+    while (game->window->pollEvent(event)){
         switch (event.type){
-            case SDL_QUIT:
-                game->stop();
+            case sf::Event::Closed:
+                game->window->close();
                 break;
 
-            case SDL_KEYDOWN:
-                processKey(event.key.keysym.sym, false);
+            case sf::Event::KeyPressed:
+                processKey(event.key.code, false);
                 break;
-            case SDL_KEYUP:
-                processKey(event.key.keysym.sym, true);
+            case sf::Event::KeyReleased:
+                processKey(event.key.code, true);
                 break;
         }
     }
 }
 
-void EventProcessor::processKey(SDL_Keycode k, bool isUp) {
+void EventProcessor::processKey(sf::Keyboard::Key k, bool isUp) {
 
     Vector2f toAdd(0, 0);
     float toAddA = 0.0;
 
     switch (k){
-        case SDLK_a: toAdd.x -= SPEED; break;
-        case SDLK_d: toAdd.x += SPEED; break;
-        case SDLK_s: toAdd.y -= SPEED; break;
-        case SDLK_w: toAdd.y += SPEED; break;
+        case sf::Keyboard::A : toAdd.x -= SPEED; break;
+        case sf::Keyboard::D : toAdd.x += SPEED; break;
+        case sf::Keyboard::S: toAdd.y -= SPEED; break;
+        case sf::Keyboard::W : toAdd.y += SPEED; break;
 
-        case SDLK_LEFT: toAddA += AS; break;
-        case SDLK_RIGHT: toAddA -= AS; break;
+        case sf::Keyboard::Left: toAddA += AS; break;
+        case sf::Keyboard::Right: toAddA -= AS; break;
     }
 
     if (isUp){
