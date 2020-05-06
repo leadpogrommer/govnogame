@@ -3,7 +3,11 @@
 #include <cmath>
 
 
-Game::Game(int w, int h): velocity(0, 0), width(w), height(h), position(0, 0), angle(M_PI/2), angularVelocity(0) {}
+Game::Game(int w, int h, char tickrate): character(Player(Vector2f(0, 0), M_PI/2)) {
+    this->width = w;
+    this->height = h;
+
+}
 
 void Game::error(int status) {
     std::cout << "ERROR!" << std::endl;
@@ -13,42 +17,27 @@ void Game::error(int status) {
     throw std::exception();
 }
 
-void Game::setVelocity(Vector2f v) {
-    this->velocity = v;
-}
-
 void Game::stop() {
-    this->isRunning = false;
+    isRunning = false;
 }
 
 void Game::run() {
     isRunning = true;
-    try {
-        init();
-    }catch (std::exception &e){
-        return;
-    }
 
-    while (isRunning){
+    try {init();}
+    catch (std::exception &e){ return; };
+
+    while (isRunning) {
         tick();
-        SDL_Delay(16);
+
+        SDL_Delay(1000/tickrate);
     }
-
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-
 }
 
 void Game::init() {
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0){
-        error();
-    }
+    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) error();
 
-    if (TTF_Init() != 0){
-        error();
-    }
-
-
+    if (TTF_Init() != 0) error();
 
     window = SDL_CreateWindow("Dicks", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
     ASSERT_NO_NULL(window);
@@ -58,27 +47,23 @@ void Game::init() {
 
     drawer = new Drawer(window);
     eventer = new EventProcessor(this);
+}
 
+void Game::setCharacter(Player c) {
+    this->character = c;
 }
 
 void Game::tick() {
     eventer->process();
 
-    position.x += velocity.y*cos(angle) + velocity.x*cos(angle + M_PI/2);
-    position.y += velocity.y*sin(angle) + velocity.x*sin(angle + M_PI/2);
+    character.tick(tickrate);
 
-
-
-
-    angle += angularVelocity;
-
-    drawer->render(position, angle);
+    drawer->render(character.position, character.angle);
 }
 
 Game::~Game() {
-    free(drawer);
-    free(eventer);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    delete drawer;
+    delete eventer;
 }
-
-
-

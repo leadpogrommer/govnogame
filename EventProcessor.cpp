@@ -1,8 +1,11 @@
 #include "EventProcessor.h"
 #include <iostream>
-#define SPEED 0.3
+#define SPEED 0.003
+#define AS 0.001
 
-EventProcessor::EventProcessor(Game *g): game(g) {}
+#include "MathUtil.h"
+
+EventProcessor::EventProcessor(Game *g): game(g), velocity(0, 0) {}
 
 void EventProcessor::process() {
     SDL_Event event;
@@ -34,15 +37,17 @@ void EventProcessor::processKey(SDL_Keycode k, bool isUp) {
         case SDLK_s: toAdd.y -= SPEED; break;
         case SDLK_w: toAdd.y += SPEED; break;
 
-        case SDLK_LEFT: toAddA += 0.01; break;
-        case SDLK_RIGHT: toAddA -= 0.01; break;
+        case SDLK_LEFT: toAddA += AS; break;
+        case SDLK_RIGHT: toAddA -= AS; break;
     }
 
     if (isUp){
         toAdd = -toAdd;
         toAddA = -toAddA;
     }
-    game->velocity = game->velocity + toAdd;
-    game->angularVelocity += toAddA;
+    velocity += toAdd;
+    aw += toAddA;
+    game->character.force(velocity);
+    game->character.angularVelocity = aw;
 
 }
