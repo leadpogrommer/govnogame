@@ -48,7 +48,7 @@ void Game::tick() {
     character.tick(tickrate);
 
     drawer->render(character.position, character.angle);
-    drawer->renderDebug(character.position, character.angle);
+//    drawer->renderDebug(character.position, character.angle);
 }
 
 Game::~Game() {

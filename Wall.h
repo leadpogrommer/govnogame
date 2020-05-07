@@ -5,10 +5,14 @@
 
 class Wall {
 public:
-    Wall(Segment s, sf::Color c): segment(s), color(c) {}
+    Wall(Segment s, char* tname): segment(s) {
+        texture.loadFromFile(tname);
+        sprite.setTexture(texture);
+    }
 
     Segment segment;
-    sf::Color color;
+    sf::Texture texture;
+    sf::Sprite sprite;
 
 };
 

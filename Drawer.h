@@ -17,19 +17,15 @@ public:
     void renderDebug(Vector2f, float);
 
     const static int mapSize = 2;
-    Wall map[mapSize] = {Wall(Segment(-2, 5, 2, 2), sf::Color::Red), Wall(Segment(-2, 3, 4, 3), sf::Color::Green)};
+    Wall map[mapSize] = {Wall(Segment(-2, 5, 2, 2), "1.png"), Wall(Segment(-2, 3, 4, 3), "2.png")};
 
 
 private:
-//    static float getDistance(Segment s, Vector2f pos, float angle);
-
-//    SDL_Texture *drawText(std::string msg, SDL_Color &color, int tox, int toy);
-
     sf::RenderWindow* window;
     int w;
     int h;
-    sf::VertexArray generateRect(int x, int y, int w, int h, sf::Color color);
-    //TODO: free zbuffer
+    static sf::VertexArray generateRect(int x, int y, int w, int h, sf::Color color);
+
     float *zbuffer;
 
 };
