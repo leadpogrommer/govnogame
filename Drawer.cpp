@@ -5,21 +5,16 @@
 #include "MathUtil.h"
 #include <utility>
 
-
-
 #define FOV (M_PI/2)
 
-
 #define TO_MAP_COORDS(v) Vector2f(v.x + mw/2, -v.y + mh/2)
-
-
 
 void Drawer::render(Vector2f pos, float angle) {
     window->clear(sf::Color::Black);
 
     std::fill(zbuffer, zbuffer+this->w, MAXFLOAT);
 
-    for (int i = 0; i < mapSize; i++){
+    for (int i = 0; i < mapSize; i++) {
         Vector2f v1 = map[i].segment.v1 - pos;
         Vector2f v2 = map[i].segment.v2 - pos;
 
@@ -31,12 +26,11 @@ void Drawer::render(Vector2f pos, float angle) {
         a1 -= angle;
         a2 -= angle;
 
-
-
         PREPARE_ANGLE(a1);
         PREPARE_ANGLE(a2);
 
-        if((abs(a1) > FOV/2) && (abs(a2) > FOV/2))continue;
+        if((abs(a1) > FOV/2) && (abs(a2) > FOV/2)) continue;
+
 
         bool reversed = false;
 
@@ -66,19 +60,17 @@ void Drawer::render(Vector2f pos, float angle) {
             d1 += ((d2-d1)/(c2-c1))*(-c1);
             c1 = 0;
         }
-        if(c2 >= w){
+        if(c2 >= w) {
             d2 += ((d2-d1)/(c2-c1))*(w-c2);
             c2 = w-1;
         }
 
-
-
         int base = h/2;
 
-        for(int c = c1; c <= c2; c++){
+        for(int c = c1; c <= c2; c++) {
             float cdst = d1 + (d2-d1)/(c2-c1)*(c-c1);
-            if (cdst < zbuffer[c]){
 
+            if (cdst < zbuffer[c]){
                 zbuffer[c] = cdst;
                 int lh = h * 1/cdst;
                 Wall* wall = &map[i];
@@ -108,8 +100,6 @@ void Drawer::renderDebug(Vector2f pos, float angle) {
 
     window->draw(generateRect(0, 0, mw, mh, sf::Color(100, 100, 100)));
 
-
-
     auto player = sf::CircleShape(5);
     player.setFillColor(sf::Color::Red);
     Vector2f omp  = TO_MAP_COORDS(pos);
@@ -123,28 +113,25 @@ void Drawer::renderDebug(Vector2f pos, float angle) {
     l = l + pos;
     line[1].position = TO_MAP_COORDS(l);
 
-
     window->draw(line);
 
     sf::VertexArray pols(sf::Lines, mapSize*2);
 
-    for(int i = 0; i < mapSize; i++){
+    for(int i = 0; i < mapSize; i++) {
         auto wp = map[i];
         pols[i*2].position = TO_MAP_COORDS(wp.segment.v1);
         pols[i*2+1].position = TO_MAP_COORDS(wp.segment.v2);
         for(int j = 0; j < 2; j++){
 //            pols[i*2+j].color = wp.color;
+
         }
     }
 
     window->draw(pols);
 
-
     std::cout << pos.x << '\t' <<  pos.y << '\t' << angle << std::endl;
     window->display();
 }
-
-
 Drawer::Drawer(sf::RenderWindow *w) : window(w) {
     this->w = w->getSize().x;
     this->h = w->getSize().y;
@@ -152,7 +139,6 @@ Drawer::Drawer(sf::RenderWindow *w) : window(w) {
     zbuffer = new float[this->w];
 
 }
-
 
 Drawer::~Drawer() {
     delete zbuffer;
@@ -164,7 +150,7 @@ sf::VertexArray Drawer::generateRect(int x, int y, int w, int h, sf::Color color
     ret[1].position = sf::Vector2f(x+w,y);
     ret[2].position = sf::Vector2f(x+w,y+h);
     ret[3].position = sf::Vector2f(x,y+h);
-    for(int i =0; i < 4; i++){
+    for(int i =0; i < 4; i++) {
         ret[i].color = color;
     }
 

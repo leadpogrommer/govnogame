@@ -18,13 +18,13 @@ class Game {
 public:
     Game(int w, int h, char tickrate);
     ~Game();
+    void init();
     void run();
     void stop();
     void setCharacter(Player character);
 
 private:
     friend class EventProcessor;
-    void init();
     void tick();
     static void error(int status = 0);
 

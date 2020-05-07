@@ -21,8 +21,6 @@ void Game::stop() {
 }
 
 void Game::run() {
-    init();
-
     while (window->isOpen()) {
         tick();
 
