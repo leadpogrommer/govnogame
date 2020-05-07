@@ -10,7 +10,7 @@ public:
     Vector2f(float _x, float _y): y(_y), x(_x) {}
     float x, y;
 
-    Vector2f operator+(Vector2f &v){
+    Vector2f operator+(const Vector2f &v){
         return Vector2f(this->x + v.x, this->y + v.y);
     }
 
@@ -26,6 +26,10 @@ public:
         this->x += v.x;
         this->y += v.y;
         return *this;
+    }
+
+    Vector2f operator*(float s){
+        return Vector2f(this->x*s, this->y*s);
     }
 
     float dot(Vector2f &v1){

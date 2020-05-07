@@ -1,7 +1,6 @@
 #include "Drawer.h"
 #include <cmath>
 #include <iostream>
-#include <algorithm>
 #include "MathUtil.h"
 #include <utility>
 
@@ -53,26 +52,40 @@ void Drawer::render(Vector2f pos, float angle) {
         d1 = v1.getLength();
         d2 = v2.getLength();
 
+//        d1 *= cos(a1);
+//        d2 *= cos(a2);
+
         int rc1 = c1;
         int rc2 = c2;
 
         if(c1 < 0){
-            d1 += ((d2-d1)/(c2-c1))*(-c1);
+//            d1 += ((d2-d1)/(c2-c1))*(-c1);
             c1 = 0;
         }
         if(c2 >= w) {
-            d2 += ((d2-d1)/(c2-c1))*(w-c2);
+//            d2 += ((d2-d1)/(c2-c1))*(w-c2);
             c2 = w-1;
         }
 
         int base = h/2;
 
+        std::cout << pos.x << '\t' <<  pos.y << '\t' << angle << std::endl;
         for(int c = c1; c <= c2; c++) {
-            float cdst = d1 + (d2-d1)/(c2-c1)*(c-c1);
 
-            if (cdst < zbuffer[c]){
+//            Vector2f clvec = v2-v1;
+//            clvec.scale((float)(c-rc1)/(float)(rc2-rc1));
+//            Vector2f nvect = v1 + clvec;
+
+            float completness = (float)(c-rc1)/(float)(rc2-rc1);
+            Vector2f nvect = v1*completness + v2*(1.0-completness);
+
+
+            float cdst = nvect.getLength();
+
+
+            if (cdst <  zbuffer[c]){
                 zbuffer[c] = cdst;
-                int lh = h * 1/cdst;
+                float lh = h/cdst;
                 Wall* wall = &map[i];
                 sf::Sprite* sp = &map[i].sprite;
                 auto tsize = wall->texture.getSize();
