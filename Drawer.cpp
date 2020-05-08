@@ -75,24 +75,32 @@ void Drawer::render(Vector2f pos, float angle) {
 //            Vector2f clvec = v2-v1;
 //            clvec.scale((float)(c-rc1)/(float)(rc2-rc1));
 //            Vector2f nvect = v1 + clvec;
+//
+//            float completness = (float)(c-rc1)/(float)(rc2-rc1);
+//            Vector2f nvect = v1*completness + v2*(1.0-completness);
+            float ca = a1 - (float)(c-rc1)/(float)(rc2-rc1) * (a1-a2);
 
-            float completness = (float)(c-rc1)/(float)(rc2-rc1);
-            Vector2f nvect = v1*completness + v2*(1.0-completness);
-
-
-            float cdst = nvect.getLength();
+            float cdst = getDistance(Segment(v1, v2), Vector2f(0, 0), ca);
 
 
             if (cdst <  zbuffer[c]){
                 zbuffer[c] = cdst;
+                cdst *= cos(ca);
                 float lh = h/cdst;
                 Wall* wall = &map[i];
                 sf::Sprite* sp = &map[i].sprite;
                 auto tsize = wall->texture.getSize();
-                float rl = ((float)tsize.x)/(rc2-rc1)*(c-rc1);
-                float rr = ((float)tsize.x)/(rc2-rc1)*(c-rc1 + 1);
+
+                float ea = a1 - (float)(c-rc1+1)/(float)(rc2-rc1) * (a1-a2);
+
+
+
+                float rl = (getIntersectionPoint(Segment(v1, v2), Vector2f(0, 0), ca) - v1).getLength() / (v2-v1).getLength() * (float)tsize.x;
+                float rr = (getIntersectionPoint(Segment(v1, v2), Vector2f(0, 0), ea) - v1).getLength() / (v2-v1).getLength() * (float)tsize.x;
+
+
                 if (!reversed){
-                    sp->setTextureRect(sf::Rect<int>(rl, 0, rr - rl, tsize.y));
+                    sp->setTextureRect(sf::Rect<int>(ceil(rl), 0, ceil(rr - rl), tsize.y));
                 } else{
                     sp->setTextureRect(sf::Rect<int>(tsize.x - rr, 0, rr - rl, tsize.y));
                 }
@@ -168,4 +176,36 @@ sf::VertexArray Drawer::generateRect(int x, int y, int w, int h, sf::Color color
     }
 
     return ret;
+}
+
+float Drawer::getDistance(Segment s, Vector2f pos, float angle) {
+    float ko, mo, kr, mr;
+
+    ko = (s.v1.y - s.v2.y) / (s.v1.x - s.v2.x);
+    mo = s.v1.y - s.v1.x * ko;
+
+    kr = tan(angle);
+    mr = pos.y - pos.x*kr;
+
+    float xi = (mr - mo) / (ko - kr);
+    float yi = ko*xi + mo;
+
+    return sqrt(pow(xi - pos.x, 2) + pow(yi - pos.y, 2));
+
+
+}
+
+Vector2f Drawer::getIntersectionPoint(Segment s, Vector2f pos, float angle){
+    float ko, mo, kr, mr;
+
+    ko = (s.v1.y - s.v2.y) / (s.v1.x - s.v2.x);
+    mo = s.v1.y - s.v1.x * ko;
+
+    kr = tan(angle);
+    mr = pos.y - pos.x*kr;
+
+    float xi = (mr - mo) / (ko - kr);
+    float yi = ko*xi + mo;
+
+    return Vector2f(xi, yi);
 }

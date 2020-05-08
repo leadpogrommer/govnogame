@@ -3,7 +3,7 @@
 #include <cmath>
 
 
-Game::Game(int w, int h, char tickrate): character(Player(Vector2f(1, 1), M_PI/2)) {
+Game::Game(int w, int h, char tickrate): character(Player(Vector2f(0, 0), M_PI/2)) {
     this->width = w;
     this->height = h;
 

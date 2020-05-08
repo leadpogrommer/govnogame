@@ -30,6 +30,9 @@ private:
 
     float *zbuffer;
 
+    float getDistance(Segment s, Vector2f pos, float angle);
+
+    Vector2f getIntersectionPoint(Segment s, Vector2f pos, float angle);
 };
 
 
