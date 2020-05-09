@@ -5,8 +5,8 @@
 
 class Wall {
 public:
-    Wall(Segment s, char* tname): segment(s) {
-        texture.loadFromFile(tname);
+    Wall(Segment s, const char *textureFileName): segment(s) {
+        texture.loadFromFile(textureFileName);
         sprite.setTexture(texture);
     }
 

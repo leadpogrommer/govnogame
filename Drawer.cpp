@@ -3,22 +3,24 @@
 #include <iostream>
 #include "MathUtil.h"
 #include <utility>
-// mingwfix
+
+#ifndef MAXFLOAT
 #include <cfloat>
 #define MAXFLOAT FLT_MAX
+#endif
 
-#define FOV (M_PI/2)
+#define FOV ((float)M_PI/2.0f)
 
-#define TO_MAP_COORDS(v) Vector2f(v.x + mw/2, -v.y + mh/2)
+#define TO_MAP_COORDS(v) Vector2f((v).x + mw/2, -(v).y + mh/2)
 
 void Drawer::render(Vector2f pos, float angle) {
     window->clear(sf::Color::Black);
 
     std::fill(zbuffer, zbuffer+this->w, MAXFLOAT);
 
-    for (int i = 0; i < mapSize; i++) {
-        Vector2f v1 = map[i].segment.v1 - pos;
-        Vector2f v2 = map[i].segment.v2 - pos;
+    for (auto & i : map) {
+        Vector2f v1 = i.segment.v1 - pos;
+        Vector2f v2 = i.segment.v2 - pos;
 
         float a1, a2;
 
@@ -31,7 +33,7 @@ void Drawer::render(Vector2f pos, float angle) {
         PREPARE_ANGLE(a1);
         PREPARE_ANGLE(a2);
 
-        if((abs(a1) > FOV/2) && (abs(a2) > FOV/2)) continue;
+        if((std::abs(a1) > FOV/2) && (std::abs(a2) > FOV/2)) continue;
 
 
         bool reversed = false;
@@ -47,74 +49,60 @@ void Drawer::render(Vector2f pos, float angle) {
 
 
         int c1, c2;
-        float d1, d2;
 
         c1 = (-(a1-(FOV/2))/FOV)*w;
         c2 = (-(a2-(FOV/2))/FOV)*w;
-
-        d1 = v1.getLength();
-        d2 = v2.getLength();
-
-//        d1 *= cos(a1);
-//        d2 *= cos(a2);
 
         int rc1 = c1;
         int rc2 = c2;
 
         if(c1 < 0){
-//            d1 += ((d2-d1)/(c2-c1))*(-c1);
             c1 = 0;
         }
         if(c2 >= w) {
-//            d2 += ((d2-d1)/(c2-c1))*(w-c2);
             c2 = w-1;
         }
 
         int base = h/2;
 
-        std::cout << pos.x << '\t' <<  pos.y << '\t' << angle << std::endl;
+//        std::cout << pos.x << '\t' <<  pos.y << '\t' << angle << std::endl;
         for(int c = c1; c <= c2; c++) {
-
-//            Vector2f clvec = v2-v1;
-//            clvec.scale((float)(c-rc1)/(float)(rc2-rc1));
-//            Vector2f nvect = v1 + clvec;
-//
-//            float completness = (float)(c-rc1)/(float)(rc2-rc1);
-//            Vector2f nvect = v1*completness + v2*(1.0-completness);
             float ca = a1 - (float)(c-rc1)/(float)(rc2-rc1) * (a1-a2);
 
-            float cdst = getDistance(Segment(v1, v2), Vector2f(0, 0), ca);
+            float columnDistance = getDistance(Segment(v1, v2), Vector2f(0, 0), ca);
 
-
-            if (cdst <  zbuffer[c]){
-                zbuffer[c] = cdst;
-                cdst *= cos(ca);
-                float lh = h/cdst;
-                Wall* wall = &map[i];
-                sf::Sprite* sp = &map[i].sprite;
-                auto tsize = wall->texture.getSize();
+            if (columnDistance < zbuffer[c]){
+                zbuffer[c] = columnDistance;
+                columnDistance *= cosf(ca);
+                float lh = (float)h / columnDistance;
+                Wall* wall = &i;
+                sf::Sprite* sp = &i.sprite;
+                auto textureSize = wall->texture.getSize();
 
                 float ea = a1 - (float)(c-rc1+1)/(float)(rc2-rc1) * (a1-a2);
 
 
-
-                float rl = (getIntersectionPoint(Segment(v1, v2), Vector2f(0, 0), ca) - v1).getLength() / (v2-v1).getLength() * (float)tsize.x;
-                float rr = (getIntersectionPoint(Segment(v1, v2), Vector2f(0, 0), ea) - v1).getLength() / (v2-v1).getLength() * (float)tsize.x;
+//                std::cout << (getIntersectionPoint(Segment(v1, v2), Vector2f(0, 0), ca) - v1).getLength() << std::endl;
+                float rl = (getIntersectionPoint(Segment(v1, v2), Vector2f(0, 0), ca) - v1).getLength() / (v2-v1).getLength() * (float)textureSize.x;
+                float rr = (getIntersectionPoint(Segment(v1, v2), Vector2f(0, 0), ea) - v1).getLength() / (v2-v1).getLength() * (float)textureSize.x;
 
 
                 if (!reversed){
-                    sp->setTextureRect(sf::Rect<int>(ceil(rl), 0, ceil(rr - rl), tsize.y));
+                    sp->setTextureRect(sf::Rect<int>(ceilf(rl), 0, ceilf(rr - rl), textureSize.y));
                 } else{
-                    sp->setTextureRect(sf::Rect<int>(tsize.x - rr, 0, rr - rl, tsize.y));
+                    sp->setTextureRect(sf::Rect<int>(textureSize.x - rr, 0, rr - rl, textureSize.y));
                 }
-                sp->setScale(1.0/(rr-rl), ((float)lh)/((float)tsize.y));
+                sp->setScale(1.0f/(rr-rl), lh / ((float)textureSize.y));
 
-                sp->setPosition(c, base-lh/2);
+                sp->setPosition((float)c, (float)base-lh/2);
                 window->draw(*sp);
 
             }
         }
     }
+
+    renderDebug(pos, angle);
+
     window->display();
 }
 
@@ -122,7 +110,7 @@ void Drawer::renderDebug(Vector2f pos, float angle) {
     const float mw = 100;
     const float mh = 100;
 
-    window->draw(generateRect(0, 0, mw, mh, sf::Color(100, 100, 100)));
+    window->draw(generateRect(0, 0, (int)mw, (int)mh, sf::Color(100, 100, 100)));
 
     auto player = sf::CircleShape(5);
     player.setFillColor(sf::Color::Red);
@@ -152,9 +140,6 @@ void Drawer::renderDebug(Vector2f pos, float angle) {
     }
 
     window->draw(pols);
-
-    std::cout << pos.x << '\t' <<  pos.y << '\t' << angle << std::endl;
-    window->display();
 }
 Drawer::Drawer(sf::RenderWindow *w) : window(w) {
     this->w = w->getSize().x;
@@ -182,33 +167,24 @@ sf::VertexArray Drawer::generateRect(int x, int y, int w, int h, sf::Color color
 }
 
 float Drawer::getDistance(Segment s, Vector2f pos, float angle) {
-    float ko, mo, kr, mr;
-
-    ko = (s.v1.y - s.v2.y) / (s.v1.x - s.v2.x);
-    mo = s.v1.y - s.v1.x * ko;
-
-    kr = tan(angle);
-    mr = pos.y - pos.x*kr;
-
-    float xi = (mr - mo) / (ko - kr);
-    float yi = ko*xi + mo;
-
-    return sqrt(pow(xi - pos.x, 2) + pow(yi - pos.y, 2));
+    return (getIntersectionPoint(s, pos, angle) - pos).getLength();
 
 
 }
 
+
 Vector2f Drawer::getIntersectionPoint(Segment s, Vector2f pos, float angle){
-    float ko, mo, kr, mr;
+    float ao = s.v2.y - s.v1.y;
+    float bo = s.v1.x - s.v2.x;
+    float co = s.v2.x*s.v1.y - s.v1.x*s.v2.y;
 
-    ko = (s.v1.y - s.v2.y) / (s.v1.x - s.v2.x);
-    mo = s.v1.y - s.v1.x * ko;
+    Vector2f adjv = Vector2f(0, 1);
+    adjv.setAngle(angle);
+    Segment r = Segment(pos, pos+adjv);
 
-    kr = tan(angle);
-    mr = pos.y - pos.x*kr;
+    float ar = r.v2.y - r.v1.y;
+    float br = r.v1.x - r.v2.x;
+    float cr = r.v2.x*r.v1.y - r.v1.x*r.v2.y;
 
-    float xi = (mr - mo) / (ko - kr);
-    float yi = ko*xi + mo;
-
-    return Vector2f(xi, yi);
+    return Vector2f(-(cr*bo - co*br) / (ar*bo - ao*br), -(ar*co - ao*cr) / (ar*bo - ao * br));
 }

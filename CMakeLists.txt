@@ -9,5 +9,5 @@ find_package(SFML 2.4.2 COMPONENTS graphics audio REQUIRED)
 include_directories(${SFML_INCLUDE_DIR})
 
 
-add_executable(govnogame main.cpp Drawer.h Drawer.cpp MathUtil.h Game.cpp Game.h EventProcessor.cpp EventProcessor.h Player.h Player.cpp Wall.cpp Wall.h)
+add_executable(govnogame main.cpp Drawer.h Drawer.cpp MathUtil.h Game.cpp Game.h EventProcessor.cpp EventProcessor.h Player.h Player.cpp Wall.h)
 target_link_libraries(govnogame sfml-graphics)

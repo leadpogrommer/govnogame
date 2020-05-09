@@ -3,7 +3,7 @@
 #include <cmath>
 #include <SFML/System.hpp>
 
-#define PREPARE_ANGLE(a) if(a > M_PI) a-= 2*M_PI; else if(a < - M_PI) a += 2*M_PI;
+#define PREPARE_ANGLE(a) if((a) > M_PI) (a)-= 2*M_PI; else if((a) < - M_PI) (a) += 2*M_PI;
 
 class Vector2f{
 public:
@@ -37,11 +37,11 @@ public:
     }
 
     float getAngle(){
-        return atan2(y, x);
+        return atan2f(y, x);
     }
 
     float getLength(){
-        return sqrt(x*x + y*y);
+        return sqrtf(x*x + y*y);
     }
 
     void normalize(){
@@ -57,8 +57,8 @@ public:
 
     void setAngle(float a){
         float l = getLength();
-        x = cos(a)*l;
-        y = sin(a)*l;
+        x = cosf(a)*l;
+        y = sinf(a)*l;
 
     }
 

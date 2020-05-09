@@ -10,13 +10,13 @@ class EventProcessor;
 #include "Player.h"
 
 
-#define ASSERT_NO_NULL(ptr) if(ptr==nullptr) error();
+#define ASSERT_NO_NULL(ptr) if((ptr)==nullptr) error();
 
 #define MAP_SIZE 2
 
 class Game {
 public:
-    Game(int w, int h, char tickrate);
+    Game(unsigned int w, unsigned int h);
     ~Game();
     void init();
     void run();
@@ -30,12 +30,11 @@ private:
 
     Player character;
     char tickrate = 60.0;
-    bool isRunning;
-    int width;
-    int height;
+    unsigned int width;
+    unsigned int height;
 
-    sf::RenderWindow *window;
+    sf::RenderWindow *window{};
 
-    Drawer *drawer;
-    EventProcessor *eventer;
+    Drawer *drawer{};
+    EventProcessor *eventer{};
 };

@@ -1,5 +1,4 @@
 #include "EventProcessor.h"
-#include <iostream>
 #define SPEED 0.003
 #define AS 0.001
 
@@ -8,11 +7,11 @@
 EventProcessor::EventProcessor(Game *g): game(g), velocity(0, 0) {}
 
 void EventProcessor::process() {
-    sf::Event event;
+    sf::Event event{};
     while (game->window->pollEvent(event)){
         switch (event.type){
             case sf::Event::Closed:
-                game->window->close();
+                game->stop();
                 break;
 
             case sf::Event::KeyPressed:
