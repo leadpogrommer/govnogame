@@ -3,6 +3,9 @@
 #include <iostream>
 #include "MathUtil.h"
 #include <utility>
+// mingwfix
+#include <cfloat>
+#define MAXFLOAT FLT_MAX
 
 #define FOV (M_PI/2)
 
