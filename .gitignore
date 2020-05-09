@@ -91,3 +91,11 @@ fabric.properties
 .idea/**/markdown-navigator/
 
 # End of https://www.gitignore.io/api/clion
+
+build/**
+
+c_cpp_properties.json
+build/CMakeFiles/CMakeOutput.log
+build/CMakeCache.txt
+build/CMakeFiles/feature_tests.bin
+build/CMakeFiles/feature_tests.c
