@@ -23,10 +23,13 @@ public:
     void stop();
     void setCharacter(Player character);
 
+
+    static void log(const std::string& status);
+    static void error(const std::string& status);
+
 private:
     friend class EventProcessor;
     void tick();
-    static void error(int status = 0);
 
     Player character;
     char tickrate = 60.0;
