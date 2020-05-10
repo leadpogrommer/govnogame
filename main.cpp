@@ -1,7 +1,7 @@
 #include "Game.h"
 
 int main() {
-    Game game(1920*2 - 50, 1080*2 - 50);
+    Game game(800, 600);
 
     game.init();
     game.run();

@@ -216,6 +216,7 @@ void Drawer::renderFloorAndCeiling(Vector2f pos, float angle) {
 void Drawer::render(Vector2f pos, float angle) {
     renderFloorAndCeiling(pos, angle);
     renderWalls(pos, angle);
+    renderEntities(pos, angle);
     renderDebug(pos, angle);
 
     window->display();
@@ -224,5 +225,48 @@ void Drawer::render(Vector2f pos, float angle) {
 float Drawer::getMagickNum(Vector2f v1, Vector2f v2) {
     Vector2f c(0, 0);
     return (v2.x-v1.x)*(c.y-v2.y) - (v2.y-v1.y)*(c.x-v2.x);
+
+}
+
+void Drawer::renderEntities(Vector2f pos, float angle) {
+    std::sort(entities.begin(), entities.end(), [&](const Entity &a, const Entity &b)-> bool{
+        return (a.pos - pos).getLength() >= (b.pos - pos).getLength();
+    });
+
+    for(auto const& e: entities){
+        Vector2f v = e.pos - pos;
+        float a = v.getAngle() - angle;
+        PREPARE_ANGLE(a);
+
+        if(std::abs(a) > M_PI_2)continue;
+
+        v.setAngle(a);
+
+
+        float c = w/2 - (w/2)*tan(a)/tan(FOV/2);
+
+        if(c < 0 or c > w-1)continue;
+
+        sf::Sprite sp;
+        sp.setTexture(e.texture);
+        auto textureSize = e.texture.getSize();
+
+        float distance = v.getLength();
+        distance*=cosf(a);
+        if(zbuffer[(int)c] < distance)continue;
+
+
+        sp.setOrigin(e.texture.getSize().x / 2, e.texture.getSize().y/2);
+
+        float coeff = (1/distance) * ((float)h/textureSize.y);
+        sp.scale(coeff, coeff);
+        sp.setPosition(c, (float)h/2);
+
+        window->draw(sp);
+
+
+    }
+
+
 
 }

@@ -18,7 +18,7 @@ public:
         return Vector2f(-this->x, -this->y);
     };
 
-    Vector2f operator-(Vector2f &v){
+    Vector2f operator-(Vector2f const &v) const{
         return Vector2f(this->x - v.x, this->y - v.y);
     }
 
