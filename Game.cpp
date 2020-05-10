@@ -1,7 +1,7 @@
 #include "Game.h"
+#include <string>
 #include <iostream>
 #include <cmath>
-
 
 Game::Game(unsigned int w, unsigned int h): character(Player(Vector2f(1, 1), 0)) {
     this->width = w;
@@ -9,9 +9,16 @@ Game::Game(unsigned int w, unsigned int h): character(Player(Vector2f(1, 1), 0))
 
 }
 
-void Game::error(int status) {
-    std::cout << "ERROR!" << std::endl;
-    std::cout << "Code = " << status << std::endl;
+static void Game::error(std::string status) {
+    std::cout << "[ERROR]" << "\t";
+    std::cout << status << std::endl;
+
+    throw std::exception();
+}
+
+static void Game::log(std::string status) {
+    std::cout << "[LOG]" << "\t";
+    std::cout << status << std::endl;
 
     throw std::exception();
 }
