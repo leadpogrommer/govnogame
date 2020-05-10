@@ -21,6 +21,8 @@ void Drawer::renderWalls(Vector2f pos, float angle) {
         Vector2f v1 = i.segment.v1 - pos;
         Vector2f v2 = i.segment.v2 - pos;
 
+        bool reversed = false;
+
         float a1, a2;
 
         a1 = v1.getAngle();
@@ -35,7 +37,10 @@ void Drawer::renderWalls(Vector2f pos, float angle) {
         if((std::abs(a1) > M_PI_2) && (std::abs(a2) > M_PI_2)) continue;
 
 
-        bool reversed = false;
+
+        v1.setAngle(a1);
+        v2.setAngle(a2);
+
 
         if (a1 < a2){
             reversed = true;
@@ -43,14 +48,21 @@ void Drawer::renderWalls(Vector2f pos, float angle) {
             std::swap(v1, v2);
         }
 
-        v1.setAngle(a1);
-        v2.setAngle(a2);
+        float magickNum = getMagickNum(v1, v2);
+        if(magickNum >0 ){
+            reversed = !reversed;
+            std::swap(a1, a2);
+            std::swap(v1, v2);
+            if(a1 < -M_PI_2)a1 += 2*M_PI;
+            if(a2 > M_PI_2)a2 -= 2*M_PI;
+        }
+
+
+
 
 
         int c1, c2;
 
-//        c1 = (-(a1-(FOV/2))/FOV)*w;
-//        c2 = (-(a2-(FOV/2))/FOV)*w;
 
         if(a1 >= M_PI_2){
             c1=0;
@@ -64,9 +76,6 @@ void Drawer::renderWalls(Vector2f pos, float angle) {
             c2 = w/2 - (w/2)*tan(a2)/tan(FOV/2);
         }
 
-        int rc1 = c1;
-        int rc2 = c2;
-
         if(c1 < 0){
             c1 = 0;
         }
@@ -78,7 +87,6 @@ void Drawer::renderWalls(Vector2f pos, float angle) {
 
 
         for(int c = c1; c <= c2; c++) {
-//            float ca = a1 - (float)(c-rc1)/(float)(rc2-rc1) * (a1-a2);
             float ca = angleFromCol(c);
 
             float columnDistance = getDistance(Segment(v1, v2), Vector2f(0, 0), ca);
@@ -91,11 +99,8 @@ void Drawer::renderWalls(Vector2f pos, float angle) {
                 sf::Sprite* sp = &i.sprite;
                 auto textureSize = wall->texture.getSize();
 
-//                float ea = a1 - (float)(c-rc1+1)/(float)(rc2-rc1) * (a1-a2);
                 float ea = angleFromCol(c+1);
 
-
-//                std::cout << (getIntersectionPoint(Segment(v1, v2), Vector2f(0, 0), ca) - v1).getLength() << std::endl;
                 float rl = (getIntersectionPoint(Segment(v1, v2), Vector2f(0, 0), ca) - v1).getLength() / (v2-v1).getLength() * (float)textureSize.x;
                 float rr = (getIntersectionPoint(Segment(v1, v2), Vector2f(0, 0), ea) - v1).getLength() / (v2-v1).getLength() * (float)textureSize.x;
 
@@ -214,4 +219,10 @@ void Drawer::render(Vector2f pos, float angle) {
     renderDebug(pos, angle);
 
     window->display();
+}
+
+float Drawer::getMagickNum(Vector2f v1, Vector2f v2) {
+    Vector2f c(0, 0);
+    return (v2.x-v1.x)*(c.y-v2.y) - (v2.y-v1.y)*(c.x-v2.x);
+
 }

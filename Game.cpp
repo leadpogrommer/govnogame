@@ -3,7 +3,7 @@
 #include <cmath>
 
 
-Game::Game(unsigned int w, unsigned int h): character(Player(Vector2f(1, 1), 0)) {
+Game::Game(unsigned int w, unsigned int h): character(Player(Vector2f(2, 2), 0)) {
     this->width = w;
     this->height = h;
 
@@ -21,8 +21,16 @@ void Game::stop() {
 }
 
 void Game::run() {
+    sf::Clock clock;
+
+
     while (window->isOpen()) {
+        clock.restart();
         tick();
+
+        auto tickTime = clock.getElapsedTime();
+
+        std::cout << tickTime.asMilliseconds() / (1000.0f / (float)tickrate) << "%\t" <<tickTime.asMilliseconds() << std::endl;
 
         sf::sleep(sf::milliseconds(1000/tickrate));
     }
