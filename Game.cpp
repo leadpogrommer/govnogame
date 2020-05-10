@@ -3,7 +3,7 @@
 #include <cmath>
 
 
-Game::Game(unsigned int w, unsigned int h): character(Player(Vector2f(0, 0), M_PI / 2)) {
+Game::Game(unsigned int w, unsigned int h): character(Player(Vector2f(1, 1), 0)) {
     this->width = w;
     this->height = h;
 
@@ -31,6 +31,9 @@ void Game::run() {
 void Game::init() {
     window = new sf::RenderWindow(sf::VideoMode(width, height), "DICKS", sf::Style::Titlebar | sf::Style::Close);
     window->setKeyRepeatEnabled(false);
+    auto icon = sf::Image();
+    icon.loadFromFile("res/icon.jpg");
+    window->setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 
     drawer = new Drawer(window);
     eventer = new EventProcessor(this);

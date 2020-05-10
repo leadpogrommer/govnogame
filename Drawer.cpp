@@ -13,8 +13,7 @@
 
 #define TO_MAP_COORDS(v) Vector2f((v).x + mw/2, -(v).y + mh/2)
 
-void Drawer::render(Vector2f pos, float angle) {
-    window->clear(sf::Color::Black);
+void Drawer::renderWalls(Vector2f pos, float angle) {
 
     std::fill(zbuffer, zbuffer+this->w, MAXFLOAT);
 
@@ -33,7 +32,7 @@ void Drawer::render(Vector2f pos, float angle) {
         PREPARE_ANGLE(a1);
         PREPARE_ANGLE(a2);
 
-        if((std::abs(a1) > FOV/2) && (std::abs(a2) > FOV/2)) continue;
+        if((std::abs(a1) > M_PI_2) && (std::abs(a2) > M_PI_2)) continue;
 
 
         bool reversed = false;
@@ -50,8 +49,20 @@ void Drawer::render(Vector2f pos, float angle) {
 
         int c1, c2;
 
-        c1 = (-(a1-(FOV/2))/FOV)*w;
-        c2 = (-(a2-(FOV/2))/FOV)*w;
+//        c1 = (-(a1-(FOV/2))/FOV)*w;
+//        c2 = (-(a2-(FOV/2))/FOV)*w;
+
+        if(a1 >= M_PI_2){
+            c1=0;
+        }else{
+            c1 = w/2 - (w/2)*tan(a1)/tan(FOV/2);
+        }
+
+        if(a2 <=-M_PI_2){
+            c2 = w-1;
+        }else{
+            c2 = w/2 - (w/2)*tan(a2)/tan(FOV/2);
+        }
 
         int rc1 = c1;
         int rc2 = c2;
@@ -65,9 +76,10 @@ void Drawer::render(Vector2f pos, float angle) {
 
         int base = h/2;
 
-//        std::cout << pos.x << '\t' <<  pos.y << '\t' << angle << std::endl;
+
         for(int c = c1; c <= c2; c++) {
-            float ca = a1 - (float)(c-rc1)/(float)(rc2-rc1) * (a1-a2);
+//            float ca = a1 - (float)(c-rc1)/(float)(rc2-rc1) * (a1-a2);
+            float ca = angleFromCol(c);
 
             float columnDistance = getDistance(Segment(v1, v2), Vector2f(0, 0), ca);
 
@@ -79,7 +91,8 @@ void Drawer::render(Vector2f pos, float angle) {
                 sf::Sprite* sp = &i.sprite;
                 auto textureSize = wall->texture.getSize();
 
-                float ea = a1 - (float)(c-rc1+1)/(float)(rc2-rc1) * (a1-a2);
+//                float ea = a1 - (float)(c-rc1+1)/(float)(rc2-rc1) * (a1-a2);
+                float ea = angleFromCol(c+1);
 
 
 //                std::cout << (getIntersectionPoint(Segment(v1, v2), Vector2f(0, 0), ca) - v1).getLength() << std::endl;
@@ -90,7 +103,7 @@ void Drawer::render(Vector2f pos, float angle) {
                 if (!reversed){
                     sp->setTextureRect(sf::Rect<int>(ceilf(rl), 0, ceilf(rr - rl), textureSize.y));
                 } else{
-                    sp->setTextureRect(sf::Rect<int>(textureSize.x - rr, 0, rr - rl, textureSize.y));
+                    sp->setTextureRect(sf::Rect<int>(textureSize.x - rr, 0, ceilf(rr - rl), textureSize.y));
                 }
                 sp->setScale(1.0f/(rr-rl), lh / ((float)textureSize.y));
 
@@ -100,10 +113,6 @@ void Drawer::render(Vector2f pos, float angle) {
             }
         }
     }
-
-    renderDebug(pos, angle);
-
-    window->display();
 }
 
 void Drawer::renderDebug(Vector2f pos, float angle) {
@@ -187,4 +196,22 @@ Vector2f Drawer::getIntersectionPoint(Segment s, Vector2f pos, float angle){
     float cr = r.v2.x*r.v1.y - r.v1.x*r.v2.y;
 
     return Vector2f(-(cr*bo - co*br) / (ar*bo - ao*br), -(ar*co - ao*cr) / (ar*bo - ao * br));
+}
+
+float Drawer::angleFromCol(int c) {
+    return atan(tanf(FOV/2)*(window->getSize().x/2.0 - c ) / (window->getSize().x / 2.0)) ;
+}
+
+void Drawer::renderFloorAndCeiling(Vector2f pos, float angle) {
+    window->draw(generateRect(0, 0, w, h/2, sf::Color::White));
+    window->draw(generateRect(0, h/2, w, h/2, sf::Color(0xdc, 0x55, 0x39)));
+
+}
+
+void Drawer::render(Vector2f pos, float angle) {
+    renderFloorAndCeiling(pos, angle);
+    renderWalls(pos, angle);
+    renderDebug(pos, angle);
+
+    window->display();
 }
