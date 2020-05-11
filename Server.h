@@ -6,9 +6,10 @@
 #include "Player.h"
 #include "Net.h"
 
-
 struct Snapshot;
+
 class Net;
+
 class Server {
 public:
     Server();
@@ -18,8 +19,8 @@ public:
 private:
     std::thread tickThread;
     std::queue<Snapshot> snaps;
-    std::mutex *snapsAccess;
-    Net *announcer;
+    std::mutex* snapsAccess;
+    Net* announcer;
     Player player;
 };
 

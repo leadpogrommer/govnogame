@@ -3,7 +3,7 @@
 #include "Server.h"
 #include "Game.h"
 
-Net::Net(std::queue<Snapshot>* snaps, std::mutex *snapsAccess) {
+Net::Net(std::queue<Snapshot>* snaps, std::mutex* snapsAccess) {
     this->snaps = snaps;
     this->snapsAccess = snapsAccess;
 
@@ -33,7 +33,7 @@ void Net::solve() {
     isRunning = true;
     while (isRunning) {
         this->snapsAccess->lock();
-        Snapshot snap{};
+        Snapshot snap {};
         if (!this->snaps->empty()) {
             snap = this->snaps->front();
             this->snaps->pop();
