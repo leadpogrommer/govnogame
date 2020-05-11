@@ -99,3 +99,4 @@ build/CMakeFiles/CMakeOutput.log
 build/CMakeCache.txt
 build/CMakeFiles/feature_tests.bin
 build/CMakeFiles/feature_tests.c
+.vscode/settings.json
