@@ -3,10 +3,10 @@
 #include <iostream>
 #include <cmath>
 
-Game::Game(unsigned int w, unsigned int h): character(Player(Vector2f(2, 2), 0)) {
+Game::Game(unsigned int w, unsigned int h, sf::IpAddress ip, unsigned short port) : {
     this->width = w;
     this->height = h;
-
+    serverSocket.connect(ip, port);
 }
 
 void Game::error(const std::string& status) {
@@ -50,18 +50,44 @@ void Game::init() {
 
     drawer = new Drawer(window);
     eventer = new EventProcessor(this);
+
+    sf::Packet id;
+    serverSocket.receive(id);
+    id >> ourId;
+
+    receiverThread = new std::thread([&]{
+        while (true){
+            sf::Packet received;
+            serverSocket.receive(received);
+            rpm.lock();
+            receivedPacket = received;
+            received = true;
+            rpm.unlock();
+        }
+    });
+
 }
 
-void Game::setCharacter(Player c) {
-    this->character = c;
-}
 
 void Game::tick() {
+    if(received){
+        received = false;
+        rpm.lock();
+        state = State(receivedPacket);
+        rpm.unlock();
+
+    }
+    if(state.entities.count(ourId) == 0)
+        return;
+
+    character.position = state.entities[ourId].position;
+
+
     eventer->process();
 
-    character.tick(tickrate);
+//    character.tick(tickrate);
 
-    drawer->render(character.position, character.angle);
+    drawer->render(character.position, character.angle, state.entities);
 //    drawer->renderDebug(character.position, character.angle);
 }
 
@@ -69,4 +95,10 @@ Game::~Game() {
     delete window;
     delete drawer;
     delete eventer;
+}
+
+void Game::sendSpeed(Vector2f spd) {
+    sf::Packet packet;
+    packet << spd.x << spd.y;
+    serverSocket.send(packet);
 }

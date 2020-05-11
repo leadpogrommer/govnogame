@@ -161,6 +161,8 @@ Drawer::Drawer(sf::RenderWindow *w) : window(w) {
 
     zbuffer = new float[this->w];
 
+    playerTexture.loadFromFile("res/dickman.png");
+
 }
 
 Drawer::~Drawer() {
@@ -213,10 +215,10 @@ void Drawer::renderFloorAndCeiling(Vector2f pos, float angle) {
 
 }
 
-void Drawer::render(Vector2f pos, float angle) {
+void Drawer::render(Vector2f pos, float angle, std::map<uint16_t, Player> &entities) {
     renderFloorAndCeiling(pos, angle);
     renderWalls(pos, angle);
-    renderEntities(pos, angle);
+    renderEntities(pos, angle, entities);
     renderDebug(pos, angle);
 
     window->display();
@@ -228,13 +230,19 @@ float Drawer::getMagickNum(Vector2f v1, Vector2f v2) {
 
 }
 
-void Drawer::renderEntities(Vector2f pos, float angle) {
+void Drawer::renderEntities(Vector2f pos, float angle, std::map<uint16_t, Player> &es) {
+    std::vector<Player> entities;
+
+    for(auto & e : es){
+        entities.push_back(e.second);
+    }
+
     std::sort(entities.begin(), entities.end(), [&](const Entity &a, const Entity &b)-> bool{
         return (a.pos - pos).getLength() >= (b.pos - pos).getLength();
     });
 
     for(auto const& e: entities){
-        Vector2f v = e.pos - pos;
+        Vector2f v = e.position - pos;
         float a = v.getAngle() - angle;
         PREPARE_ANGLE(a);
 
@@ -248,15 +256,15 @@ void Drawer::renderEntities(Vector2f pos, float angle) {
         if(c < 0 or c > w-1)continue;
 
         sf::Sprite sp;
-        sp.setTexture(e.texture);
-        auto textureSize = e.texture.getSize();
+        sp.setTexture(playerTexture);
+        auto textureSize = playerTexture.getSize();
 
         float distance = v.getLength();
         distance*=cosf(a);
         if(zbuffer[(int)c] < distance)continue;
 
 
-        sp.setOrigin(e.texture.getSize().x / 2, e.texture.getSize().y/2);
+        sp.setOrigin(playerTexture.getSize().x / 2,playerTexture.getSize().y/2);
 
         float coeff = (1/distance) * ((float)h/textureSize.y);
         sp.scale(coeff, coeff);

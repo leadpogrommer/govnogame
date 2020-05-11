@@ -4,6 +4,7 @@
 class Player {
 public:
     Player(Vector2f pos0, float angle0);
+    Player()= default;
     void tick(float tickrate);
     void force(Vector2f dir);
 

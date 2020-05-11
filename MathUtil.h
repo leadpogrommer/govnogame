@@ -8,6 +8,7 @@
 class Vector2f{
 public:
     Vector2f(float _x, float _y): y(_y), x(_x) {}
+    Vector2f()= default;
     float x, y;
 
     Vector2f operator+(const Vector2f &v){

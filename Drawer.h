@@ -8,6 +8,8 @@
 #include "MathUtil.h"
 #include "Wall.h"
 #include "Entity.h"
+#include "Player.h"
+#import <map>
 
 #include <SFML/Graphics.hpp>
 
@@ -15,7 +17,7 @@ class Drawer {
 public:
     explicit Drawer(sf::RenderWindow* w);
     ~Drawer();
-    void render(Vector2f, float);
+    void render(Vector2f pos, float angle, std::map<uint16_t, Player> &entities);
 
 
     const static int mapSize = 7;
@@ -29,13 +31,14 @@ public:
 //    Wall map[mapSize] = {Wall(Segment(-2, 5, 2, 2), "1.png")};
 //    Wall map[mapSize] = {Wall(Segment(-1, 1, 5, 4), "loh.jpeg")};
 
-    std::vector<Entity> entities = {Entity(Vector2f(-9, -9), 0, "res/dickman.png"),
-                                    Entity(Vector2f(5, 3), 0, "res/dickman.png"),
-                                    Entity(Vector2f(0, -1), 0, "res/dickman.png"),};
+//    std::vector<Entity> entities = {Entity(Vector2f(-9, -9), 0, "res/dickman.png"),
+//                                    Entity(Vector2f(5, 3), 0, "res/dickman.png"),
+//                                    Entity(Vector2f(0, -1), 0, "res/dickman.png"),};
 
 
 private:
     sf::RenderWindow* window;
+    sf::Texture playerTexture;
     int w;
     int h;
     static sf::VertexArray generateRect(int x, int y, int w, int h, sf::Color color);
@@ -54,7 +57,7 @@ private:
 
     void renderFloorAndCeiling(Vector2f pos, float angle);
 
-    void renderEntities(Vector2f pos, float angle);
+    void renderEntities(Vector2f pos, float angle, std::map<uint16_t, Player> &es);
 
     float getMagickNum(Vector2f, Vector2f);
 };

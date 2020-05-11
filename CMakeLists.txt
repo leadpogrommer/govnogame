@@ -13,7 +13,6 @@ include_directories(${SFML_INCLUDE_DIR})
 file(GLOB GG_SOURCES *.cpp)
 file(GLOB GG_HEADERS *.h)
 
-set(CMAKE_CXX_COM)
 
 add_executable(govnogame ${GG_HEADERS} ${GG_SOURCES})
 target_link_libraries(govnogame sfml-graphics sfml-network ${CMAKE_THREAD_LIBS_INIT})
