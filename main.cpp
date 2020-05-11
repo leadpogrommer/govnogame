@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv) {
 
-    Game game(800, 600, sf::IpAddress(argv[0]), 1488);
+    Game game(800, 600, sf::IpAddress(argv[1]), 1488);
 
 
     game.init();
