@@ -6,21 +6,30 @@
 #include <SFML/Network.hpp>
 #include "Server.h"
 #include <sstream>
+#include "State.h"
+#include <map>
+#include <iostream>
 
 
-struct Snapshot;
+
+
+
+class Server;
 class Net {
 public:
-    Net(std::queue<Snapshot>* snaps, std::mutex* snapsAccess);
+    Net(std::queue<State>* snaps, std::mutex* snapsAccess, Server* s);
     const int port = 1488;
     void stop() { isRunning = false; }
     
 private:
     std::mutex* snapsAccess;
-    std::queue<Snapshot>* snaps;
+    std::queue<State>* toSend;
     std::thread announcerThread;
+    std::thread accepterThread;
     sf::TcpListener announcer;
-    sf::TcpSocket client;
     bool isRunning = false;
     void solve();
+    Server* server;
+    std::mutex clientMapAccess;
+    std::map<uint16_t, std::pair<sf::TcpSocket*, std::thread>> clients;
 };

@@ -5,8 +5,8 @@
 #include <thread>
 #include "Player.h"
 #include "Net.h"
+#include "State.h"
 
-struct Snapshot;
 
 class Net;
 
@@ -15,17 +15,17 @@ public:
     Server();
     void tick();
     const char tickrate = 60;
+    uint16_t addPlayer();
+    std::mutex govno;
+    std::thread tickThread;
 
 private:
-    std::thread tickThread;
-    std::queue<Snapshot> snaps;
-    std::mutex* snapsAccess;
-    Net* announcer;
-    Player player;
-};
+    friend class Net;
+    uint16_t nextPID = 0;
 
-struct Snapshot {
-    float x;
-    float y;
-    float angle;
+    std::queue<State> toSend;
+    std::mutex* snapsAccess;
+
+    Net* announcer;
+    State state;
 };

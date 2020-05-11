@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cmath>
 
-Game::Game(unsigned int w, unsigned int h, sf::IpAddress ip, unsigned short port) : {
+Game::Game(unsigned int w, unsigned int h, sf::IpAddress ip, unsigned short port) {
     this->width = w;
     this->height = h;
     serverSocket.connect(ip, port);
@@ -35,7 +35,7 @@ void Game::run() {
 
         auto tickTime = clock.getElapsedTime();
 
-        std::cout << tickTime.asMilliseconds() / (1000.0f / (float)tickrate) << "%\t" <<tickTime.asMilliseconds() << std::endl;
+//        std::cout << tickTime.asMilliseconds() / (1000.0f / (float)tickrate) << "%\t" <<tickTime.asMilliseconds() << std::endl;
 
         sf::sleep(sf::milliseconds(1000/tickrate));
     }
@@ -54,13 +54,14 @@ void Game::init() {
     sf::Packet id;
     serverSocket.receive(id);
     id >> ourId;
+    std::cout << ourId << std::endl;
 
     receiverThread = new std::thread([&]{
         while (true){
-            sf::Packet received;
-            serverSocket.receive(received);
+            sf::Packet r;
+            serverSocket.receive(r);
             rpm.lock();
-            receivedPacket = received;
+            receivedPacket = r;
             received = true;
             rpm.unlock();
         }
@@ -80,14 +81,21 @@ void Game::tick() {
     if(state.entities.count(ourId) == 0)
         return;
 
-    character.position = state.entities[ourId].position;
+    Vector2f oldVelocity = character.velocity;
+    float oldAngularVelocity = character.angularVelocity;
+
+    character = state.entities[ourId];
+    character.velocity = oldVelocity;
+    character.angularVelocity = oldAngularVelocity;
 
 
     eventer->process();
 
-//    character.tick(tickrate);
+    character.tick(tickrate);
 
     drawer->render(character.position, character.angle, state.entities);
+
+    state.entities[ourId] = character;
 //    drawer->renderDebug(character.position, character.angle);
 }
 
@@ -97,8 +105,9 @@ Game::~Game() {
     delete eventer;
 }
 
-void Game::sendSpeed(Vector2f spd) {
+void Game::sendSpeed(Vector2f spd, float aw) {
     sf::Packet packet;
-    packet << spd.x << spd.y;
+    std::cout << spd.x << '\t' << spd.y << std::endl;
+    packet << spd.x << spd.y << aw;
     serverSocket.send(packet);
 }

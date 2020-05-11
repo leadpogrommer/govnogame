@@ -6,6 +6,7 @@ void State::toPacket(sf::Packet &p) {
         p<<pair.first;
         p<<pair.second.position.x;
         p<<pair.second.position.y;
+        p<<pair.second.angle;
     }
 }
 
@@ -17,7 +18,9 @@ State::State(sf::Packet &p) {
         p >> id;
         float x, y;
         p >> x >> y;
-        entities[id] = Player(Vector2f(x, y), 0);
+        float angle;
+        p >> angle;
+        entities[id] = Player(Vector2f(x, y), angle);
 
     }
 }

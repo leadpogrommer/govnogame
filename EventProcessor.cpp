@@ -45,7 +45,7 @@ void EventProcessor::processKey(sf::Keyboard::Key k, bool isUp) {
     }
     velocity += toAdd;
     aw += toAddA;
-    game->sendSpeed(velocity);
+    game->sendSpeed(velocity, aw);
     game->character.force(velocity);
     game->character.angularVelocity = aw;
 

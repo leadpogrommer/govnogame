@@ -30,7 +30,7 @@ public:
     static void log(const std::string& status);
     static void error(const std::string& status);
 
-    void sendSpeed(Vector2f spd);
+    void sendSpeed(Vector2f spd, float aw);
 
 private:
     friend class EventProcessor;

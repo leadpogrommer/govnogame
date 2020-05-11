@@ -10,11 +10,11 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
 
-Server::Server(): player(Player(Vector2f(0, 0), 0.0)) {
-    this->snaps = std::queue<Snapshot>();
+Server::Server() {
+//    this->snaps = std::queue<Snapshot>();
     this->snapsAccess = new std::mutex();
 
-    this->announcer = new Net(&(this->snaps), this->snapsAccess);
+    this->announcer = new Net(&(this->toSend), this->snapsAccess, this);
     this->tickThread = std::thread(&Server::tick, this);
 
     std::stringstream ss;
@@ -24,16 +24,23 @@ Server::Server(): player(Player(Vector2f(0, 0), 0.0)) {
 
 void Server::tick() {
     while (true) {
-        struct Snapshot snap;
-        snap.x = this->player.position.x;
-        snap.y = this->player.position.y;
-        snap.angle = this->player.angle;
+
+        govno.lock();
+        for(auto &e: state.entities){
+            e.second.tick(tickrate);
+        }
         this->snapsAccess->lock();
-        this->snaps.push(snap);
+        this->toSend.push(state);
         this->snapsAccess->unlock();
+        govno.unlock();
 
         std::this_thread::sleep_for(std::chrono::milliseconds(1000/this->tickrate));
     }
+}
+
+uint16_t Server::addPlayer() {
+    state.entities[nextPID] = Player();
+    return nextPID++;
 }
 
 #pragma clang diagnostic pop

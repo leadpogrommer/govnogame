@@ -2,10 +2,10 @@
 #include "Server.h"
 #include <thread>
 
-int main() {
-    Game game(800, 600, sf::IpAddress(), 0);
+int main(int argc, char** argv) {
 
-    Server server;
+    Game game(800, 600, sf::IpAddress(argv[0]), 1488);
+
 
     game.init();
     game.run();

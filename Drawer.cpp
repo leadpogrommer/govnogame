@@ -232,8 +232,8 @@ void Drawer::renderEntities(Vector2f pos, float angle, std::map<uint16_t, Player
         entities.push_back(e.second);
     }
 
-    std::sort(entities.begin(), entities.end(), [&](const Entity &a, const Entity &b)-> bool{
-        return (a.pos - pos).getLength() >= (b.pos - pos).getLength();
+    std::sort(entities.begin(), entities.end(), [&](const Player &a, const Player &b)-> bool{
+        return (a.position - pos).getLength() >= (b.position - pos).getLength();
     });
 
     for(auto const& e: entities){
