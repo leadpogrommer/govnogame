@@ -4,7 +4,7 @@ project(govnogame)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MODULE_PATH "/usr/share/SFML/cmake/Modules/")
 
-find_package(SFML 2.4.2 COMPONENTS graphics audio network REQUIRED)
+find_package(SFML 2.5.1 COMPONENTS graphics audio network REQUIRED)
 
 find_package(Threads)
 

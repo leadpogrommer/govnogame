@@ -17,7 +17,7 @@ void Drawer::renderWalls(Vector2f pos, float angle) {
 
     std::fill(zbuffer, zbuffer+this->w, MAXFLOAT);
 
-    for (auto & i : map) {
+    for (auto& i : map) {
         Vector2f v1 = i.segment.v1 - pos;
         Vector2f v2 = i.segment.v2 - pos;
 
@@ -42,14 +42,14 @@ void Drawer::renderWalls(Vector2f pos, float angle) {
         v2.setAngle(a2);
 
 
-        if (a1 < a2){
+        if (a1 < a2) {
             reversed = true;
             std::swap(a1, a2);
             std::swap(v1, v2);
         }
 
         float magickNum = getMagickNum(v1, v2);
-        if(magickNum >0 ){
+        if (magickNum > 0) {
             reversed = !reversed;
             std::swap(a1, a2);
             std::swap(v1, v2);
@@ -57,41 +57,36 @@ void Drawer::renderWalls(Vector2f pos, float angle) {
             if(a2 > M_PI_2)a2 -= 2*M_PI;
         }
 
-
-
-
-
         int c1, c2;
 
-
-        if(a1 >= M_PI_2){
-            c1=0;
-        }else{
+        if (a1 >= M_PI_2) {
+            c1 = 0;
+        } else {
             c1 = w/2 - (w/2)*tan(a1)/tan(FOV/2);
         }
 
-        if(a2 <=-M_PI_2){
+        if (a2 <=-M_PI_2) {
             c2 = w-1;
-        }else{
+        } else {
             c2 = w/2 - (w/2)*tan(a2)/tan(FOV/2);
         }
 
-        if(c1 < 0){
+        if (c1 < 0) {
             c1 = 0;
         }
-        if(c2 >= w) {
+        if (c2 >= w) {
             c2 = w-1;
         }
 
         int base = h/2;
 
 
-        for(int c = c1; c <= c2; c++) {
+        for (int c = c1; c <= c2; c++) {
             float ca = angleFromCol(c);
 
             float columnDistance = getDistance(Segment(v1, v2), Vector2f(0, 0), ca);
 
-            if (columnDistance < zbuffer[c]){
+            if (columnDistance < zbuffer[c]) {
                 zbuffer[c] = columnDistance;
                 columnDistance *= cosf(ca);
                 float lh = (float)h / columnDistance;
@@ -105,9 +100,9 @@ void Drawer::renderWalls(Vector2f pos, float angle) {
                 float rr = (getIntersectionPoint(Segment(v1, v2), Vector2f(0, 0), ea) - v1).getLength() / (v2-v1).getLength() * (float)textureSize.x;
 
 
-                if (!reversed){
+                if (!reversed) {
                     sp->setTextureRect(sf::Rect<int>(ceilf(rl), 0, ceilf(rr - rl), textureSize.y));
-                } else{
+                } else {
                     sp->setTextureRect(sf::Rect<int>(textureSize.x - rr, 0, ceilf(rr - rl), textureSize.y));
                 }
                 sp->setScale(1.0f/(rr-rl), lh / ((float)textureSize.y));

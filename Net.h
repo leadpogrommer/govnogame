@@ -13,11 +13,10 @@ class Net {
 public:
     Net(std::queue<Snapshot>* snaps, std::mutex* snapsAccess);
     const int port = 1488;
-    void stop(){isRunning = false;}
-
+    void stop() { isRunning = false; }
     
 private:
-    std::mutex *snapsAccess;
+    std::mutex* snapsAccess;
     std::queue<Snapshot>* snaps;
     std::thread announcerThread;
     sf::TcpListener announcer;
